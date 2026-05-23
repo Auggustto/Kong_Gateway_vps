@@ -27,12 +27,17 @@ jobs:
             echo "❌ Erro: DOCKER_TOKEN não está configurado"
             exit 1
           fi
+          if [ -z "${{ secrets.TOKEN_PUSH }}" ]; then
+            echo "⚠️  Aviso: GITHUB_TOKEN_PUSH não está configurado, usando GITHUB_TOKEN padrão"
+            echo "   Para melhor suporte, crie um Personal Access Token (PAT)"
+            echo "   🔗 https://github.com/settings/tokens/new"
+          fi
           echo "✅ Secrets validados"
 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TOKEN_PUSH || secrets.GITHUB_TOKEN }}
 
       - name: Definir variáveis de environment
         run: |
@@ -157,7 +162,9 @@ jobs:
             -m "Commit: ${{ github.sha }}" \
             -m "Author: ${{ github.actor }}"
           
-          git push origin HEAD:${{ github.ref_name }}
+          # Push com token para evitar erro de permissão
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN_PUSH || secrets.GITHUB_TOKEN }}"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref_name }}
           echo "✅ Manifest pusheado com sucesso"
 
       - name: Notificar resultado
