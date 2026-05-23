@@ -15,9 +15,8 @@ ENV KONG_DATABASE=off \
     KONG_ADMIN_LISTEN="0.0.0.0:8001" \
     KONG_LOG_LEVEL="info"
 
-# Copiar configuração do Kong (se existir)
-COPY ./kong.yml /etc/kong/kong.yml 2>/dev/null || true
-COPY ./kong/ /etc/kong/ 2>/dev/null || true
+# Copiar configuração do Kongs
+RUN mkdir -p /etc/kong/config
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
