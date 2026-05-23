@@ -1,0 +1,27 @@
+# kubernetes/develop/kong/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kong-api
+  namespace: kong
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/upstream-vhost: "api.augustodeveloper.com"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.augustodeveloper.com
+      secretName: api-augustodeveloper-tls
+  rules:
+    - host: api.augustodeveloper.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kong-proxy
+                port:
+                  number: 80

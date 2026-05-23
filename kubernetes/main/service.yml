@@ -1,0 +1,29 @@
+# kubernetes/main/service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-proxy
+  namespace: kong
+  labels:
+    app: kong
+
+spec:
+  type: LoadBalancer
+  selector:
+    app: kong
+
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000
+
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 8443
+
+    - name: admin
+      protocol: TCP
+      port: 8001
+      targetPort: 8001
