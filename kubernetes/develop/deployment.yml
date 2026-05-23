@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: taken007/fastapi:3b87c06
+          image: taken007/fastapi:200b147
           imagePullPolicy: IfNotPresent
 
           ports:
