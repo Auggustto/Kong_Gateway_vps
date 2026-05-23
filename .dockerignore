@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# GitHub
+.github
+
+# CI/CD
+.gitlab-ci.yml
+
+# Kubernetes
+kubernetes/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+*.log
+node_modules
+dist
+build
+
+# Documentation
+*.md
+docs/
+
+# Tests
+tests/
+__pycache__
+*.pytest_cache
