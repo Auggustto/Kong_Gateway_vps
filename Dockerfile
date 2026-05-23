@@ -1,6 +1,6 @@
 # Dockerfile - Kong Gateway API Proxy
 
-FROM kong:3.4-alpine
+FROM kong:3.8
 
 # Metadata
 ARG BUILD_DATE
