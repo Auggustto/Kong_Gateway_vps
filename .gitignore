@@ -1,0 +1,27 @@
+# Backups
+*.bak
+*.backup
+*~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+
+# Kubernetes
+.kubeconfig
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore

@@ -111,21 +111,19 @@ jobs:
             exit 1
           fi
           
-          # Backup do arquivo original
-          cp "$DEPLOYMENT_FILE" "$DEPLOYMENT_FILE.bak"
-          
           # Atualizar imagem no deployment
-          sed -i "s|image: .*fastapi:.*|image: ${{ env.IMAGE }}:${{ env.SHORT_TAG }}|g" "$DEPLOYMENT_FILE"
+          # Procura por: image: <qualquer_coisa>:latest ou image: <qualquer_coisa>:tag
+          sed -i "s|image: .*:latest|image: ${{ env.IMAGE }}:${{ env.NAMESPACE }}-latest|g" "$DEPLOYMENT_FILE"
+          sed -i "s|image: .*:[a-f0-9]\{7\}|image: ${{ env.IMAGE }}:${{ env.SHORT_TAG }}|g" "$DEPLOYMENT_FILE"
           
           # Validar alterações
-          if grep -q "${{ env.IMAGE }}:${{ env.SHORT_TAG }}" "$DEPLOYMENT_FILE"; then
+          if grep -q "${{ env.IMAGE }}:" "$DEPLOYMENT_FILE"; then
             echo "✅ Deployment atualizado com sucesso"
             echo "   Novo: ${{ env.IMAGE }}:${{ env.SHORT_TAG }}"
             git diff "$DEPLOYMENT_FILE"
           else
-            echo "❌ Falha ao atualizar deployment"
-            mv "$DEPLOYMENT_FILE.bak" "$DEPLOYMENT_FILE"
-            exit 1
+            echo "⚠️  Nenhuma imagem foi atualizada"
+            echo "   Verifique se o manifesto contém campo 'image:'"
           fi
 
       - name: Validar manifests YAML

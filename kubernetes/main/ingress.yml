@@ -3,10 +3,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kong-api
-  namespace: kong
+  namespace: main
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/upstream-vhost: "api.augustodeveloper.com"
     cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
   ingressClassName: nginx

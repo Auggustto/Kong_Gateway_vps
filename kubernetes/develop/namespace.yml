@@ -1,5 +1,7 @@
-# kubernetes/develop/namespace.yaml
+# kubernetes/develop/namespace.yml
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kong
+  name: develop
+  labels:
+    environment: develop

@@ -3,10 +3,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kong
-  namespace: kong
+  namespace: main
+  labels:
+    app: kong
+    environment: production
 
 spec:
-  replicas: 1
+  replicas: 3
 
   strategy:
     type: RollingUpdate
@@ -22,21 +25,38 @@ spec:
     metadata:
       labels:
         app: kong
+        environment: production
 
     spec:
       containers:
         - name: kong
-          image: placeholder/fastapi:latest
+          image: kong:3.8-alpine
           imagePullPolicy: IfNotPresent
+
+          env:
+            - name: KONG_DATABASE
+              value: "off"
+            - name: KONG_PROXY_LISTEN
+              value: "0.0.0.0:8000"
+            - name: KONG_ADMIN_LISTEN
+              value: "0.0.0.0:8001"
+            - name: KONG_LOG_LEVEL
+              value: "info"
 
           ports:
             - containerPort: 8000
-              name: http
+              name: proxy
+            - containerPort: 8443
+              name: proxy-ssl
+            - containerPort: 8001
+              name: admin
+            - containerPort: 8444
+              name: admin-ssl
 
           livenessProbe:
             httpGet:
-              path: /
-              port: 8000
+              path: /status
+              port: 8001
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
@@ -44,8 +64,8 @@ spec:
 
           readinessProbe:
             httpGet:
-              path: /
-              port: 8000
+              path: /status
+              port: 8001
             initialDelaySeconds: 10
             periodSeconds: 5
             timeoutSeconds: 3
@@ -53,8 +73,8 @@ spec:
 
           resources:
             requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
               cpu: 500m
               memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi

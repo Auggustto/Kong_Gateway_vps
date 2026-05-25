@@ -3,9 +3,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kong-proxy
-  namespace: kong
+  namespace: main
   labels:
     app: kong
+    environment: production
 
 spec:
   type: LoadBalancer
@@ -27,3 +28,8 @@ spec:
       protocol: TCP
       port: 8001
       targetPort: 8001
+
+    - name: admin-ssl
+      protocol: TCP
+      port: 8444
+      targetPort: 8444

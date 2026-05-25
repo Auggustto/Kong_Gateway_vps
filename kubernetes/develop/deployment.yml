@@ -1,55 +1,80 @@
-# kubernetes/develop/kong/deployment.yaml
+# kubernetes/develop/deployment.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kong
-  namespace: kong
+  namespace: develop
+  labels:
+    app: kong
+    environment: develop
+
 spec:
   replicas: 1
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
   selector:
     matchLabels:
       app: kong
+
   template:
     metadata:
       labels:
         app: kong
+        environment: develop
+
     spec:
       containers:
         - name: kong
-          image: kong:3.7-alpine
+          image: kong:3.8-alpine
+          imagePullPolicy: IfNotPresent
+
           env:
             - name: KONG_DATABASE
               value: "off"
-            - name: KONG_DECLARATIVE_CONFIG
-              value: /kong/config/_global.yaml
             - name: KONG_PROXY_LISTEN
               value: "0.0.0.0:8000"
             - name: KONG_ADMIN_LISTEN
               value: "0.0.0.0:8001"
-            - name: KONG_TRUSTED_IPS
-              value: "0.0.0.0/0"
-            - name: KONG_REAL_IP_HEADER
-              value: "X-Forwarded-For"
+            - name: KONG_LOG_LEVEL
+              value: "debug"
+
           ports:
             - containerPort: 8000
+              name: proxy
+            - containerPort: 8443
+              name: proxy-ssl
             - containerPort: 8001
-          volumeMounts:
-            - name: kong-config
-              mountPath: /kong/config
+              name: admin
+            - containerPort: 8444
+              name: admin-ssl
+
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
           readinessProbe:
             httpGet:
               path: /status
               port: 8001
             initialDelaySeconds: 10
-            periodSeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: 200m
+              memory: 256Mi
             limits:
-              cpu: "500m"
-              memory: "512Mi"
-      volumes:
-        - name: kong-config
-          configMap:
-            name: kong-config-global
+              cpu: 500m
+              memory: 512Mi
