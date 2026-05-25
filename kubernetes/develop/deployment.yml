@@ -1,59 +1,55 @@
+# kubernetes/develop/kong/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi
-  namespace: develop
-
+  name: kong
+  namespace: kong
 spec:
   replicas: 1
-
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-
   selector:
     matchLabels:
-      app: fastapi
-
+      app: kong
   template:
     metadata:
       labels:
-        app: fastapi
-
+        app: kong
     spec:
       containers:
-        - name: fastapi
-          image: taken007/fastapi:1f25873
-          imagePullPolicy: IfNotPresent
-
+        - name: kong
+          image: kong:3.7-alpine
+          env:
+            - name: KONG_DATABASE
+              value: "off"
+            - name: KONG_DECLARATIVE_CONFIG
+              value: /kong/config/_global.yaml
+            - name: KONG_PROXY_LISTEN
+              value: "0.0.0.0:8000"
+            - name: KONG_ADMIN_LISTEN
+              value: "0.0.0.0:8001"
+            - name: KONG_TRUSTED_IPS
+              value: "0.0.0.0/0"
+            - name: KONG_REAL_IP_HEADER
+              value: "X-Forwarded-For"
           ports:
             - containerPort: 8000
-              name: http
-
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-
+            - containerPort: 8001
+          volumeMounts:
+            - name: kong-config
+              mountPath: /kong/config
           readinessProbe:
             httpGet:
-              path: /
-              port: 8000
+              path: /status
+              port: 8001
             initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 2
-
+            periodSeconds: 10
           resources:
             requests:
-              cpu: 100m
-              memory: 128Mi
+              cpu: "200m"
+              memory: "256Mi"
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: kong-config
+          configMap:
+            name: kong-config-global
