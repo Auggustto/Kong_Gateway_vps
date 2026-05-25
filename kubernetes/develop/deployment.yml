@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: kong
-          image: kong:3.8-alpine
+          image: kong:3.8
           imagePullPolicy: IfNotPresent
 
           env:
