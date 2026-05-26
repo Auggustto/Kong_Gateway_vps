@@ -1,0 +1,31 @@
+# kubernetes/release/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kong-config-global
+  namespace: kong
+data:
+  _global.yaml: |
+    _format_version: "3.0"
+
+    services:
+      - name: api-test
+        url:0 http://api-test-svc.default.svc.cluster.local:80
+        routes:
+          - name: api-test-route
+            paths: [/api-test]
+            strip_path: true
+            plugins:
+              - name: jwt
+
+    plugins:
+      - name: cors
+        config:
+          origins: ["https://api.augustodeveloper.com"]
+          methods: [GET, POST, PUT, DELETE, PATCH, OPTIONS]
+          headers: [Authorization, Content-Type]
+          max_age: 3600
+      - name: correlation-id
+        config:
+          header_name: X-Request-ID
+          generator: uuid

@@ -1,0 +1,7 @@
+# kubernetes/release/namespace.yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: release
+  labels:
+    environment: release

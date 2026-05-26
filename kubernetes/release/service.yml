@@ -1,0 +1,35 @@
+# kubernetes/release/service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-proxy
+  namespace: release
+  labels:
+    app: kong
+    environment: release
+
+spec:
+  type: ClusterIP
+  selector:
+    app: kong
+
+  ports:
+    - name: proxy
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+    - name: proxy-ssl
+      protocol: TCP
+      port: 8443
+      targetPort: 8443
+
+    - name: admin
+      protocol: TCP
+      port: 8001
+      targetPort: 8001
+
+    - name: admin-ssl
+      protocol: TCP
+      port: 8444
+      targetPort: 8444
