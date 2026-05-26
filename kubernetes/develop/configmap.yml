@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kong-config-global
-  namespace: kong
+  name: kong-config-develop
+  namespace: develop
 data:
   _global.yaml: |
     _format_version: "3.0"
